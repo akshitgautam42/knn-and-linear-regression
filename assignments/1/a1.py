@@ -9,6 +9,8 @@ current_dir = Path(__file__).resolve().parent
 # Construct the path to the data file
 data_file = current_dir.parent.parent / 'data' / 'external' / 'spotify.csv'
 
+print(data_file)
+
 # Load the data
 df = pd.read_csv(data_file)
 
@@ -70,3 +72,41 @@ subset_features = ['danceability', 'energy', 'loudness', 'tempo', 'track_genre']
 sns.pairplot(df[subset_features], hue='track_genre')
 plt.savefig(current_dir / 'figures' / 'pairplot.png')
 plt.close()
+# Additional visualizations
+
+# 1. Bar plot showing the distribution of genres
+plt.figure(figsize=(15, 8))
+genre_counts = df['track_genre'].value_counts()
+sns.barplot(x=genre_counts.index, y=genre_counts.values)
+plt.title('Distribution of Genres in the Dataset')
+plt.xlabel('Genre')
+plt.ylabel('Number of Tracks')
+plt.xticks(rotation=90)
+plt.tight_layout()
+plt.savefig(current_dir / 'figures' / 'genre_distribution.png')
+plt.close()
+
+# 2. Analysis of the 'explicit' feature in relation to genres
+plt.figure(figsize=(15, 8))
+explicit_by_genre = df.groupby('track_genre')['explicit'].mean().sort_values(ascending=False)
+sns.barplot(x=explicit_by_genre.index, y=explicit_by_genre.values)
+plt.title('Proportion of Explicit Tracks by Genre')
+plt.xlabel('Genre')
+plt.ylabel('Proportion of Explicit Tracks')
+plt.xticks(rotation=90)
+plt.tight_layout()
+plt.savefig(current_dir / 'figures' / 'explicit_by_genre.png')
+plt.close()
+
+# 3. Heatmap of average feature values by genre
+features_to_plot = ['danceability', 'energy', 'loudness', 'speechiness', 'acousticness', 
+                    'instrumentalness', 'liveness', 'valence', 'tempo']
+genre_features = df.groupby('track_genre')[features_to_plot].mean()
+plt.figure(figsize=(15, 12))
+sns.heatmap(genre_features, cmap='YlGnBu', annot=False)
+plt.title('Average Feature Values by Genre')
+plt.tight_layout()
+plt.savefig(current_dir / 'figures' / 'genre_features_heatmap.png')
+plt.close()
+
+print("Additional visualizations have been saved in the 'figures' directory.")
